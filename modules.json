@@ -1,0 +1,33 @@
+[
+  "currency",
+  "consentManagement",
+  "consentManagementUsp",
+  "priceFloors",
+
+  "userId",
+  "fabrickIdSystem",
+  "33acrossIdSystem",
+
+  "appnexusBidAdapter",
+  "sovrnBidAdapter",
+  "openxBidAdapter",
+  "rubiconBidAdapter",
+  "tripleliftBidAdapter",
+  "ixBidAdapter",
+  "conversantBidAdapter",
+  "sharethroughBidAdapter",
+  "33acrossBidAdapter",
+  "pubmaticBidAdapter",
+  "pulsepointBidAdapter",
+  "justpremiumBidAdapter",
+  "gumgumBidAdapter",
+  "sonobiBidAdapter",
+  "gridBidAdapter",
+  "minutemediaBidAdapter",
+  "adkernelBidAdapter",
+  "medianetBidAdapter",
+  "vidazooBidAdapter",
+
+  "nativoBidAdapter",
+  "riseBidAdapter"
+]
