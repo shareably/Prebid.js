@@ -1,0 +1,9 @@
+[
+	"audienceNetworkBidAdapter",
+  "appnexusBidAdapter",
+  "sovrnBidAdapter",
+  "openxBidAdapter",
+  "rubiconBidAdapter",
+  "tripleliftBidAdapter",
+  "ixBidAdapter"
+]
