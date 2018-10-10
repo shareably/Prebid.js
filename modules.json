@@ -6,5 +6,6 @@
   "rubiconBidAdapter",
   "tripleliftBidAdapter",
   "ixBidAdapter",
-  "sortableBidAdapter"
+  "sortableBidAdapter",
+  "teadsBidAdapter"
 ]
