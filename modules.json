@@ -7,5 +7,7 @@
   "tripleliftBidAdapter",
   "ixBidAdapter",
   "sortableBidAdapter",
-  "teadsBidAdapter"
+  "teadsBidAdapter",
+  "undertoneBidAdapter",
+  "districtDMXBidAdapter",
 ]
