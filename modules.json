@@ -9,5 +9,6 @@
   "sortableBidAdapter",
   "teadsBidAdapter",
   "undertoneBidAdapter",
-  "districtmDMXBidAdapter"
+  "districtmDMXBidAdapter",
+  "beachfrontBidAdapter"
 ]
