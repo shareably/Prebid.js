@@ -3,6 +3,7 @@
   "appnexusBidAdapter",
   "sovrnBidAdapter",
   "openxBidAdapter",
+  "openxoutstreamBidAdapter",
   "rubiconBidAdapter",
   "tripleliftBidAdapter",
   "ixBidAdapter",
@@ -10,5 +11,6 @@
   "teadsBidAdapter",
   "undertoneBidAdapter",
   "districtmDMXBidAdapter",
-  "beachfrontBidAdapter"
+  "beachfrontBidAdapter",
+  "spotxBidAdapter"
 ]
