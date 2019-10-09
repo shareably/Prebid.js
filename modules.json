@@ -12,5 +12,6 @@
   "undertoneBidAdapter",
   "districtmDMXBidAdapter",
   "beachfrontBidAdapter",
-  "spotxBidAdapter"
+  "spotxBidAdapter",
+  "conversantBidAdapter"
 ]
