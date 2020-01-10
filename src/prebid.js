@@ -943,4 +943,26 @@ $$PREBID_GLOBAL$$.processQueue = function () {
   processQueue($$PREBID_GLOBAL$$.cmd);
 };
 
+// Sbly Prebid Modifications
+$$PREBID_GLOBAL$$.getAllBidResponses  = function () {
+  return getAllBidResponses('getBidsReceived');
+}
+
+function getAllBidResponses(type) {
+  const responses = auctionManager[type]()
+    .filter(utils.bind.call(adUnitsFilter, this, auctionManager.getAdUnitCodes()));
+
+  return JSON.parse(JSON.stringify(responses
+    .map(bid => bid.adUnitCode)
+    .filter(uniques).map(adUnitCode => responses
+      .filter(bid => bid.adUnitCode === adUnitCode))
+    .filter(bids => bids && bids[0] && bids[0].adUnitCode)
+    .map(bids => {
+      return {
+        [bids[0].adUnitCode]: { bids }
+      };
+    })
+    .reduce((a, b) => Object.assign(a, b), {}))); 
+}
+
 export default $$PREBID_GLOBAL$$;
