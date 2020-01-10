@@ -11,6 +11,8 @@ import { hook } from './hook.js';
 import includes from 'core-js-pure/features/array/includes.js';
 import find from 'core-js-pure/features/array/find.js';
 
+import { getWinningBidsWithSharing } from './modifications/sblyReuseBidsAcrossDepth.js';
+
 var CONSTANTS = require('./constants.json');
 
 var pbTargetingKeys = [];
@@ -37,6 +39,10 @@ export let filters = {
 // This can happen in case of concurrent auctions
 // If adUnitBidLimit is set above 0 return top N number of bids
 export const getHighestCpmBidsFromBidPool = hook('sync', function(bidsReceived, highestCpmCallback, adUnitBidLimit = 0, hasModified = false) {
+  if (adUnitBidLimit === 0) {
+    return bidsReceived;
+  }
+
   if (!hasModified) {
     const bids = [];
     const dealPrioritization = config.getConfig('sendBidsControl.dealPrioritization');
@@ -436,14 +442,18 @@ export function newTargeting(auctionManager) {
    */
   targeting.getWinningBids = function(adUnitCode, bidsReceived = getBidsReceived()) {
     const adUnitCodes = getAdUnitCodes(adUnitCode);
-    return bidsReceived
+
+    const adUnitCodesWithBids = bidsReceived
       .filter(bid => includes(adUnitCodes, bid.adUnitCode))
       .filter(bid => bid.cpm > 0)
       .map(bid => bid.adUnitCode)
       .filter(uniques)
-      .map(adUnitCode => bidsReceived
+
+    const originalWinningBids = adUnitCodesWithBids.map(adUnitCode => bidsReceived
         .filter(bid => bid.adUnitCode === adUnitCode ? bid : null)
         .reduce(getHighestCpm));
+
+    return getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bidsReceived);
   };
 
   /**
