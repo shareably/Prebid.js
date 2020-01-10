@@ -4,6 +4,8 @@ import { NATIVE_TARGETING_KEYS } from './native';
 import { auctionManager } from './auctionManager';
 import { sizeSupported } from './sizeMapping';
 import { ADPOD } from './mediaTypes';
+import { getWinningBidsWithSharing } from './modifications/sblyReuseBidsAcrossDepth';
+
 import includes from 'core-js/library/fn/array/includes';
 
 const utils = require('./utils.js');
@@ -33,6 +35,10 @@ export let filters = {
 // This can happen in case of concurrent auctions
 // If adUnitBidLimit is set above 0 return top N number of bids
 export function getHighestCpmBidsFromBidPool(bidsReceived, highestCpmCallback, adUnitBidLimit = 0) {
+  if (adUnitBidLimit === 0) {
+    return bidsReceived;
+  }
+
   const bids = [];
   // bucket by adUnitcode
   let buckets = groupBy(bidsReceived, 'adUnitCode');
@@ -367,14 +373,18 @@ export function newTargeting(auctionManager) {
    */
   targeting.getWinningBids = function(adUnitCode, bidsReceived = getBidsReceived()) {
     const adUnitCodes = getAdUnitCodes(adUnitCode);
-    return bidsReceived
+
+    const adUnitCodesWithBids = bidsReceived
       .filter(bid => includes(adUnitCodes, bid.adUnitCode))
       .filter(bid => bid.cpm > 0)
       .map(bid => bid.adUnitCode)
       .filter(uniques)
-      .map(adUnitCode => bidsReceived
+
+    const originalWinningBids = adUnitCodesWithBids.map(adUnitCode => bidsReceived
         .filter(bid => bid.adUnitCode === adUnitCode ? bid : null)
         .reduce(getHighestCpm));
+
+    return getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bidsReceived);
   };
 
   /**
