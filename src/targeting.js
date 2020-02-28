@@ -120,6 +120,7 @@ export function sortByDealAndPriceBucketOrCpm(useCpm = false) {
 export function newTargeting(auctionManager) {
   let targeting = {};
   let latestAuctionForAdUnit = {};
+  let customBidUseFunction;
 
   targeting.setLatestAuctionForAdUnit = function(adUnitCode, auctionId) {
     latestAuctionForAdUnit[adUnitCode] = auctionId;
@@ -450,11 +451,19 @@ export function newTargeting(auctionManager) {
       .filter(uniques)
 
     const originalWinningBids = adUnitCodesWithBids.map(adUnitCode => bidsReceived
-        .filter(bid => bid.adUnitCode === adUnitCode ? bid : null)
-        .reduce(getHighestCpm));
+      .filter(bid => bid.adUnitCode === adUnitCode ? bid : null)
+      .reduce(getHighestCpm));
 
-    return getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bidsReceived);
+    console.time('getWinningBids')
+    const withSharingWinningBids = getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bidsReceived, customBidUseFunction);
+    console.timeEnd('getWinningBids')
+
+    return withSharingWinningBids;
   };
+
+  targeting.setCustomBidUseFunction = function(canUseBidForAdUnitCodeFunction) {
+    customBidUseFunction = canUseBidForAdUnitCodeFunction;
+  }
 
   /**
    * @param  {(string|string[])} adUnitCode adUnitCode or array of adUnitCodes
