@@ -14,5 +14,6 @@
   "districtmDMXBidAdapter",
   "beachfrontBidAdapter",
   "spotxBidAdapter",
-  "conversantBidAdapter"
+  "conversantBidAdapter",
+  "nobidBidAdapter"
 ]
