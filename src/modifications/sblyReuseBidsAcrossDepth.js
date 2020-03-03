@@ -103,7 +103,7 @@ function transformInvalidAssignmentsToNegative(constraintMatrix) {
     const minRow = [];
     row.forEach(value => {
       if (value === INVALID_ASSIGNMENT) {
-        minRow.push(-maxValue * 10);
+        minRow.push(-maxValue * 20);
       } else {
         minRow.push(value);        
       }
@@ -265,9 +265,13 @@ function getWinningBidAssignmentWithGeneralizedSharing(originalWinningBids, adUn
     mappingWithEarlyDepthPreference[code] = winningBidAssignments[code];
   })
 
-  utils.sblyLog('Depth-Optimized Mapping:', mappingWithEarlyDepthPreference, 'Original', winningBidAssignments)
+  const sumOfEarly = Object.values(mappingWithEarlyDepthPreference).reduce((acc, next) => acc + (next || {}).cpm || 0, 0);
+  const sumOfOriginal = Object.values(winningBidAssignments).reduce((acc, next) => acc + (next || {}).cpm || 0, 0);
+  const useOriginalMapping = (sumOfEarly + 0.01) < sumOfOriginal;
 
-  return mappingWithEarlyDepthPreference
+  utils.sblyLog(`Depth-Optimized Mapping ($${sumOfEarly.toFixed(4)}):`, mappingWithEarlyDepthPreference, `Original ($${sumOfOriginal.toFixed(4)})`, winningBidAssignments, 'Using Early Mapping:', !useOriginalMapping);
+
+  return useOriginalMapping ? winningBidAssignments : mappingWithEarlyDepthPreference;
 }
 
 function determineIfLiftIsGreatEnough(originalWinningBids, adUnitCodes, winningBidAssignments, groupedByUnitCode) {
