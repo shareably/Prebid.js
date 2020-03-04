@@ -16,6 +16,9 @@ import { getCoreStorageManager } from '../storageManager.js';
 
 export const storage = getCoreStorageManager('bidderFactory');
 
+import { useFakeGeneratedBids, fakeBidResponsesForBidRequest } from '../modifications/bidderFactoryDebug.js';
+import { sblyLog } from '../utils.js';
+
 /**
  * This file aims to support Adapters during the Prebid 0.x -> 1.x transition.
  *
@@ -214,6 +217,15 @@ export function newBidder(spec) {
           bid.adUnitCode = bid.placementCode
         }
       });
+
+      if (useFakeGeneratedBids()) {
+        sblyLog(`Using Fake Bids!!!`);
+        const onResponse = delayExecution(configEnabledCallback(afterAllResponses), 1);
+        const fakeBids = fakeBidResponsesForBidRequest(bidderRequest);
+        fakeBids.forEach(addBidUsingRequestMap);
+        onResponse(fakeBids);
+        return;
+      }
 
       let requests = spec.buildRequests(validBidRequests, bidderRequest);
       if (!requests || requests.length === 0) {
