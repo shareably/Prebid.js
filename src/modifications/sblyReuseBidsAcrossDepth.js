@@ -1,7 +1,7 @@
 import includes from 'core-js/library/fn/array/includes';
 import { lap } from './lap.js';
+import { sblyLog } from '../utils.js';
 
-const utils = require('../utils.js');
 const INVALID_ASSIGNMENT = "INVALID";
 
 function find(array, fn) {
@@ -204,15 +204,15 @@ function getWinningBidAssignmentWithGeneralizedSharing(originalWinningBids, adUn
   var winningBidAssignments = {};
   const { bidsForAdCode, adUnitCodesForBidAdId } = createMappingOfBidsAndAdUnitCodes(adUnitCodes, bidsReceived, customBidUseFunction);
 
-  utils.sblyLog('Starting optimization for bid CPM');
-  utils.sblyLog('Mapping of available bids for each ad unit code:', bidsForAdCode);
-  utils.sblyLog('Mapping of ad unit codes for each bid adId', adUnitCodesForBidAdId);
+  sblyLog('Starting optimization for bid CPM');
+  sblyLog('Mapping of available bids for each ad unit code:', bidsForAdCode);
+  sblyLog('Mapping of ad unit codes for each bid adId', adUnitCodesForBidAdId);
 
   const { constraintMatrix, columnIndexToBid, rowIndexToAdUnitCode } = createMaxCPMSumMatrix(adUnitCodes, bidsReceived, customBidUseFunction);
   const negativeMatrix = transformInvalidAssignmentsToNegative(constraintMatrix);
   const minimizedConstraintMatrix = minimizeMatrix(negativeMatrix);
 
-  utils.sblyLog('Minimized constraint matrix (Bid CPM Maximization):', minimizedConstraintMatrix, columnIndexToBid, rowIndexToAdUnitCode);
+  sblyLog('Minimized constraint matrix (Bid CPM Maximization):', minimizedConstraintMatrix, columnIndexToBid, rowIndexToAdUnitCode);
 
   // Choose winning bids to use
 
@@ -223,10 +223,10 @@ function getWinningBidAssignmentWithGeneralizedSharing(originalWinningBids, adUn
     const isValidAssignment = constraintMatrix[rowIndex][columnIndex] !== INVALID_ASSIGNMENT;
 
     if (adUnitCode && winningBid && isValidAssignment) {
-      utils.sblyLog('Assigning', adUnitCode, 'to', winningBid)
+      sblyLog('Assigning', adUnitCode, 'to', winningBid)
       winningBidAssignments[adUnitCode] = winningBid;
     } else {
-      utils.sblyLog('Assignment for', adUnitCode, 'to', winningBid, 'was not successful. Is not a valid combination in the matrix');
+      sblyLog('Assignment for', adUnitCode, 'to', winningBid, 'was not successful. Is not a valid combination in the matrix');
     }
   });
 
@@ -235,8 +235,8 @@ function getWinningBidAssignmentWithGeneralizedSharing(originalWinningBids, adUn
   const adUnitCodesByDepth = arrangeAdUnitCodesWithDepthByDepth(adUnitCodes);
   const bidsSortedByHighestCPM = Object.values(winningBidAssignments).sort((bid, otherBid) => otherBid.cpm - bid.cpm)
 
-  utils.sblyLog('Starting optimization for depth...')
-  utils.sblyLog('Ad Unit Codes With Depth:', adUnitCodesByDepth)
+  sblyLog('Starting optimization for depth...')
+  sblyLog('Ad Unit Codes With Depth:', adUnitCodesByDepth)
 
   const depthConstraintMatrix = createEarliestDepthMatrix(adUnitCodesByDepth, bidsSortedByHighestCPM, adUnitCodesForBidAdId);
   const greaterNegativeMatrix = transformInvalidAssignmentsToNegative(depthConstraintMatrix);
@@ -245,7 +245,7 @@ function getWinningBidAssignmentWithGeneralizedSharing(originalWinningBids, adUn
 
   const mappingWithEarlyDepthPreference = {};
 
-  utils.sblyLog('Minimized constraint matrix (Depth Optimization):', minimizedDepthMatrix);
+  sblyLog('Minimized constraint matrix (Depth Optimization):', minimizedDepthMatrix);
 
   solvedDepthMatrix.forEach((columnIndex, rowIndex) => {
     const adUnitCode = adUnitCodesByDepth[rowIndex];
@@ -253,10 +253,10 @@ function getWinningBidAssignmentWithGeneralizedSharing(originalWinningBids, adUn
     const isValidAssignment = depthConstraintMatrix[rowIndex][columnIndex] !== INVALID_ASSIGNMENT;
 
     if (adUnitCode && winningBid && isValidAssignment) {
-      utils.sblyLog('Assigning', adUnitCode, 'to', winningBid)
+      sblyLog('Assigning', adUnitCode, 'to', winningBid)
       mappingWithEarlyDepthPreference[adUnitCode] = winningBid;
     } else {
-      utils.sblyLog('Assignment for', adUnitCode, 'to', winningBid, 'was not successful. Is not a valid combination in the matrix');
+      sblyLog('Assignment for', adUnitCode, 'to', winningBid, 'was not successful. Is not a valid combination in the matrix');
     }
   });
 
@@ -269,7 +269,7 @@ function getWinningBidAssignmentWithGeneralizedSharing(originalWinningBids, adUn
   const sumOfOriginal = Object.values(winningBidAssignments).reduce((acc, next) => acc + (next || {}).cpm || 0, 0);
   const useOriginalMapping = (sumOfEarly + 0.01) < sumOfOriginal;
 
-  utils.sblyLog(`Depth-Optimized Mapping ($${sumOfEarly.toFixed(4)}):`, mappingWithEarlyDepthPreference, `Original ($${sumOfOriginal.toFixed(4)})`, winningBidAssignments, 'Using Early Mapping:', !useOriginalMapping);
+  sblyLog(`Depth-Optimized Mapping ($${sumOfEarly.toFixed(4)}):`, mappingWithEarlyDepthPreference, `Original ($${sumOfOriginal.toFixed(4)})`, winningBidAssignments, 'Using Early Mapping:', !useOriginalMapping);
 
   return useOriginalMapping ? winningBidAssignments : mappingWithEarlyDepthPreference;
 }
@@ -319,8 +319,8 @@ function determineIfLiftIsGreatEnough(originalWinningBids, adUnitCodes, winningB
   const gainPercentage = gainAmount / originalTotal;
   const hasEnoughGain = gainAmount > 0.075 && gainPercentage > 0.005;
 
-  utils.sblyLog('Change Summary', changeSummaries, 'Final Assignments', winningBidAssignments);
-  utils.sblyLog('Gain Summary', { hasEnoughGain, gainAmount, reassignedBidTotal, originalTotal, gainPercentage: Math.round(gainPercentage * 100, 6) });
+  sblyLog('Change Summary', changeSummaries, 'Final Assignments', winningBidAssignments);
+  sblyLog('Gain Summary', { hasEnoughGain, gainAmount, reassignedBidTotal, originalTotal, gainPercentage: Math.round(gainPercentage * 100, 6) });
 
   return hasEnoughGain;
 }
@@ -335,7 +335,7 @@ export function getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bids
     return acc;
   }, {})
 
-  utils.sblyLog('Default Winning Assigments', groupedByUnitCode);
+  sblyLog('Default Winning Assigments', groupedByUnitCode);
 
   const winningBidAssignments = getWinningBidAssignmentWithGeneralizedSharing(originalWinningBids, adUnitCodes, bidsReceived, customBidUseFunction);
   const hasEnoughGain = determineIfLiftIsGreatEnough(originalWinningBids, adUnitCodes, winningBidAssignments, groupedByUnitCode);
@@ -351,10 +351,10 @@ export function getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bids
         return null
       }
     }).filter(bid => bid);
-    utils.sblyLog('Using Modified Winning Bids', winningBids.reduce((acc, next) => Object.assign(acc, { [next.adUnitCode]: next }), {}));
+    sblyLog('Using Modified Winning Bids', winningBids.reduce((acc, next) => Object.assign(acc, { [next.adUnitCode]: next }), {}));
     return winningBids;
   } else {
-    utils.sblyLog('Using Original Winning Bids', originalWinningBids.reduce((acc, next) => Object.assign(acc, { [next.adUnitCode]: next }), {}));
+    sblyLog('Using Original Winning Bids', originalWinningBids.reduce((acc, next) => Object.assign(acc, { [next.adUnitCode]: next }), {}));
     return originalWinningBids;
   }
 }
