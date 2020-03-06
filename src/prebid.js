@@ -345,10 +345,6 @@ $$PREBID_GLOBAL$$.setTargetingForAst = function (adUnitCodes) {
   events.emit(SET_TARGETING, targeting.getAllTargeting());
 };
 
-$$PREBID_GLOBAL$$.setCustomBidUseFunction = function(customBidUseFunction) {
-  targeting.setCustomBidUseFunction(customBidUseFunction)
-}
-
 function emitAdRenderFail({ reason, message, bid, id }) {
   const data = { reason, message };
   if (bid) data.bid = bid;
