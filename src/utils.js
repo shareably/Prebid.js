@@ -260,13 +260,6 @@ export function logInfo() {
   }
 }
 
-export function sblyLog() {
-  const originalLogCondition = debugTurnedOn() && consoleLogExists;
-  if ((window && window.location && window.location.href && window.location.href.includes('sbly_prebid_debug')) || originalLogCondition) {
-    console.log.apply(console, decorateLog(arguments, 'SBLY:'));
-  }
-}
-
 export function logWarn() {
   if (debugTurnedOn() && consoleWarnExists) {
     console.warn.apply(console, decorateLog(arguments, 'WARNING:'));

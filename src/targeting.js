@@ -11,7 +11,7 @@ import { hook } from './hook.js';
 import includes from 'core-js-pure/features/array/includes.js';
 import find from 'core-js-pure/features/array/find.js';
 
-import { getWinningBidsWithSharing } from './modifications/sblyReuseBidsAcrossDepth.js';
+import { getWinningBidsWithSharing } from './sbly/sblyModifications.js';
 
 var CONSTANTS = require('./constants.json');
 
@@ -120,7 +120,6 @@ export function sortByDealAndPriceBucketOrCpm(useCpm = false) {
 export function newTargeting(auctionManager) {
   let targeting = {};
   let latestAuctionForAdUnit = {};
-  let customBidUseFunction;
 
   targeting.setLatestAuctionForAdUnit = function(adUnitCode, auctionId) {
     latestAuctionForAdUnit[adUnitCode] = auctionId;
@@ -455,15 +454,11 @@ export function newTargeting(auctionManager) {
       .reduce(getHighestCpm));
 
     console.time('getWinningBids')
-    const withSharingWinningBids = getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bidsReceived, customBidUseFunction);
+    const withSharingWinningBids = getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bidsReceived);
     console.timeEnd('getWinningBids')
 
     return withSharingWinningBids;
   };
-
-  targeting.setCustomBidUseFunction = function(canUseBidForAdUnitCodeFunction) {
-    customBidUseFunction = canUseBidForAdUnitCodeFunction;
-  }
 
   /**
    * @param  {(string|string[])} adUnitCode adUnitCode or array of adUnitCodes

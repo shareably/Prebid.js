@@ -16,8 +16,8 @@ import { getCoreStorageManager } from '../storageManager.js';
 
 export const storage = getCoreStorageManager('bidderFactory');
 
-import { useFakeGeneratedBids, fakeBidResponsesForBidRequest } from '../modifications/bidderFactoryDebug.js';
-import { sblyLog } from '../utils.js';
+import { sblyLog } from '../sbly/sblyUtils.js';
+import { useFakeGeneratedBids, fakeBidResponsesForBidRequest } from '../sbly/sblyModifications.js';
 
 /**
  * This file aims to support Adapters during the Prebid 0.x -> 1.x transition.

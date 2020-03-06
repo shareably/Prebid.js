@@ -1,11 +1,27 @@
+import { DEBUG_WITH_FAKE_BIDS } from '../sblyUtils.js';
+
 export function useFakeGeneratedBids() {
-  return window && window.location && window.location.href && window.location.href.includes('sbly_use_fake_bids');
+  return window && window.location && window.location.href && window.location.href.includes(DEBUG_WITH_FAKE_BIDS);
 }
 
 export function fakeBidResponsesForBidRequest(bidRequest) {
   return bidRequest.bids.map(bid => {
     return generateFakeBid(bidRequest, bid)
   })
+}
+
+const gaussianRandomUniform = () => {
+  var rand = 0;
+
+  for (var i = 0; i < 6; i += 1) {
+    rand += Math.random();
+  }
+
+  return rand / 6;
+}
+
+const gaussianRandom = (start, end) => {
+  return start + gaussianRandomUniform() * (end - start);
 }
 
 function uuidv4() {
@@ -16,8 +32,12 @@ function uuidv4() {
 }
 
 function generateFakeBid(bidRequest, bid) {
+  const adUnitCode = bid.adUnitCode || bidRequest.placementCode;
+  const isVideoAd = adUnitCode.includes('video');
+
   const adId = uuidv4();
-  const cpm = Math.random() * 3;
+  const cpm = isVideoAd ? gaussianRandom(1.5, 3.5) : gaussianRandom(0.05, 2.25);
+
   const creativeId = parseFloat((Math.random() * 10000000).toFixed(0));
 
   return {
