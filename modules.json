@@ -14,5 +14,8 @@
   "beachfrontBidAdapter",
   "spotxBidAdapter",
   "conversantBidAdapter",
-  "nobidBidAdapter"
+  "nobidBidAdapter",
+  "sharethroughBidAdapter",
+  "yieldmoBidAdapter",
+  "aolBidAdapter"
 ]
