@@ -18,5 +18,6 @@
   "nobidBidAdapter",
   "sharethroughBidAdapter",
   "yieldmoBidAdapter",
-  "aolBidAdapter"
+  "aolBidAdapter",
+  "oneVideoBidAdapter"
 ]
