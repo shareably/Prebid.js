@@ -90,10 +90,12 @@ export const spec = {
       return [];
     }
     size = getSize(bidRequest.sizes);
+    const adId = `${utils.generateUUID()}${bid.adid}`.replace(/-/g, '');
     bidResponse = {
       requestId: bidRequest.bidId,
       bidderCode: spec.code,
       cpm: bid.price,
+      adId: adId,
       creativeId: bid.crid,
       width: size.width,
       height: size.height,
