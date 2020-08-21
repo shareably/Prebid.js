@@ -1,7 +1,6 @@
 [
   "consentManagement",
   "consentManagementUsp",
-	"audienceNetworkBidAdapter",
   "appnexusBidAdapter",
   "sovrnBidAdapter",
   "openxBidAdapter",
