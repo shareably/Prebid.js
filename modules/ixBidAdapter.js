@@ -24,6 +24,14 @@ const USER_SYNC_URL = 'https://js-sec.indexww.com/um/ixmatch.html';
 
 const FLOOR_SOURCE = { PBJS: 'p', IX: 'x' };
 
+function chunkArrayInGroups(arr, size) {
+  var myArray = [];
+  for(var i = 0; i < arr.length; i += size) {
+    myArray.push(arr.slice(i, i+size));
+  }
+  return myArray;
+}
+
 /**
  * Transform valid bid request config object to banner impression object that will be sent to ad server.
  *
@@ -788,83 +796,87 @@ export const spec = {
    * @param  {object} bidderRequest    A object contains bids and other info like gdprConsent.
    * @return {object}                  Info describing the request to the server.
    */
-  buildRequests: function (validBidRequests, bidderRequest) {
-    let reqs = [];
-    let bannerImps = {};
-    let videoImps = {};
-    let validBidRequest = null;
+  buildRequests: function (allValidBidRequests, bidderRequest) {
+    const chunkedValidBidRequests = chunkArrayInGroups(allValidBidRequests, 15);
+    return Array.prototype.concat.apply([], chunkedValidBidRequests.map(validBidRequests => {
+      let reqs = [];
+      let bannerImps = {};
+      let videoImps = {};
+      let validBidRequest = null;
 
-    // To capture the missing sizes i.e not configured for ix
-    let missingBannerSizes = {};
+      // To capture the missing sizes i.e not configured for ix
+      let missingBannerSizes = {};
 
-    const DEFAULT_IX_CONFIG = {
-      detectMissingSizes: true,
-    };
+      const DEFAULT_IX_CONFIG = {
+        detectMissingSizes: true,
+      };
 
-    const ixConfig = { ...DEFAULT_IX_CONFIG, ...config.getConfig('ix') };
+      const ixConfig = { ...DEFAULT_IX_CONFIG, ...config.getConfig('ix') };
 
-    for (let i = 0; i < validBidRequests.length; i++) {
-      validBidRequest = validBidRequests[i];
+      for (let i = 0; i < validBidRequests.length; i++) {
+        validBidRequest = validBidRequests[i];
 
-      if (validBidRequest.mediaType === VIDEO || utils.deepAccess(validBidRequest, 'mediaTypes.video')) {
-        if (validBidRequest.mediaType === VIDEO || includesSize(validBidRequest.mediaTypes.video.playerSize, validBidRequest.params.size)) {
-          if (!videoImps.hasOwnProperty(validBidRequest.transactionId)) {
-            videoImps[validBidRequest.transactionId] = {};
+        if (validBidRequest.mediaType === VIDEO || utils.deepAccess(validBidRequest, 'mediaTypes.video')) {
+          if (validBidRequest.mediaType === VIDEO || includesSize(validBidRequest.mediaTypes.video.playerSize, validBidRequest.params.size)) {
+            if (!videoImps.hasOwnProperty(validBidRequest.transactionId)) {
+              videoImps[validBidRequest.transactionId] = {};
+            }
+            if (!videoImps[validBidRequest.transactionId].hasOwnProperty('ixImps')) {
+              videoImps[validBidRequest.transactionId].ixImps = [];
+            }
+
+            videoImps[validBidRequest.transactionId].ixImps.push(bidToVideoImp(validBidRequest));
           }
-          if (!videoImps[validBidRequest.transactionId].hasOwnProperty('ixImps')) {
-            videoImps[validBidRequest.transactionId].ixImps = [];
+        }
+        if (validBidRequest.mediaType === BANNER ||
+          (utils.deepAccess(validBidRequest, 'mediaTypes.banner') && includesSize(utils.deepAccess(validBidRequest, 'mediaTypes.banner.sizes'), validBidRequest.params.size)) ||
+          (!validBidRequest.mediaType && !validBidRequest.mediaTypes)) {
+          let imp = bidToBannerImp(validBidRequest);
+
+          if (!bannerImps.hasOwnProperty(validBidRequest.transactionId)) {
+            bannerImps[validBidRequest.transactionId] = {};
           }
-          videoImps[validBidRequest.transactionId].ixImps.push(bidToVideoImp(validBidRequest));
+          if (!bannerImps[validBidRequest.transactionId].hasOwnProperty('ixImps')) {
+            bannerImps[validBidRequest.transactionId].ixImps = []
+          }
+          bannerImps[validBidRequest.transactionId].ixImps.push(imp);
+          if (ixConfig.hasOwnProperty('detectMissingSizes') && ixConfig.detectMissingSizes) {
+            updateMissingSizes(validBidRequest, missingBannerSizes, imp);
+          }
         }
       }
-      if (validBidRequest.mediaType === BANNER ||
-        (utils.deepAccess(validBidRequest, 'mediaTypes.banner') && includesSize(utils.deepAccess(validBidRequest, 'mediaTypes.banner.sizes'), validBidRequest.params.size)) ||
-        (!validBidRequest.mediaType && !validBidRequest.mediaTypes)) {
-        let imp = bidToBannerImp(validBidRequest);
 
-        if (!bannerImps.hasOwnProperty(validBidRequest.transactionId)) {
-          bannerImps[validBidRequest.transactionId] = {};
-        }
-        if (!bannerImps[validBidRequest.transactionId].hasOwnProperty('ixImps')) {
-          bannerImps[validBidRequest.transactionId].ixImps = []
-        }
-        bannerImps[validBidRequest.transactionId].ixImps.push(imp);
-        if (ixConfig.hasOwnProperty('detectMissingSizes') && ixConfig.detectMissingSizes) {
-          updateMissingSizes(validBidRequest, missingBannerSizes, imp);
-        }
-      }
-    }
+      // Finding the missing banner sizes, and making impressions for them
+      for (var transactionId in missingBannerSizes) {
+        if (missingBannerSizes.hasOwnProperty(transactionId)) {
+          let missingSizes = missingBannerSizes[transactionId].missingSizes;
 
-    // Finding the missing banner sizes, and making impressions for them
-    for (var transactionId in missingBannerSizes) {
-      if (missingBannerSizes.hasOwnProperty(transactionId)) {
-        let missingSizes = missingBannerSizes[transactionId].missingSizes;
+          if (!bannerImps.hasOwnProperty(transactionId)) {
+            bannerImps[transactionId] = {};
+          }
+          if (!bannerImps[transactionId].hasOwnProperty('missingImps')) {
+            bannerImps[transactionId].missingImps = [];
+            bannerImps[transactionId].missingCount = 0;
+          }
 
-        if (!bannerImps.hasOwnProperty(transactionId)) {
-          bannerImps[transactionId] = {};
-        }
-        if (!bannerImps[transactionId].hasOwnProperty('missingImps')) {
-          bannerImps[transactionId].missingImps = [];
-          bannerImps[transactionId].missingCount = 0;
-        }
-
-        let origImp = missingBannerSizes[transactionId].impression;
-        for (let i = 0; i < missingSizes.length; i++) {
-          let newImp = createMissingBannerImp(validBidRequest, origImp, missingSizes[i]);
-          bannerImps[transactionId].missingImps.push(newImp);
-          bannerImps[transactionId].missingCount++;
+          let origImp = missingBannerSizes[transactionId].impression;
+          for (let i = 0; i < missingSizes.length; i++) {
+            let newImp = createMissingBannerImp(validBidRequest, origImp, missingSizes[i]);
+            bannerImps[transactionId].missingImps.push(newImp);
+            bannerImps[transactionId].missingCount++;
+          }
         }
       }
-    }
 
-    if (Object.keys(bannerImps).length > 0) {
-      reqs.push(...buildRequest(validBidRequests, bidderRequest, bannerImps, BANNER_ENDPOINT_VERSION));
-    }
-    if (Object.keys(videoImps).length > 0) {
-      reqs.push(...buildRequest(validBidRequests, bidderRequest, videoImps, VIDEO_ENDPOINT_VERSION));
-    }
+      if (Object.keys(bannerImps).length > 0) {
+        reqs.push(...buildRequest(validBidRequests, bidderRequest, bannerImps, BANNER_ENDPOINT_VERSION));
+      }
+      if (Object.keys(videoImps).length > 0) {
+        reqs.push(...buildRequest(validBidRequests, bidderRequest, videoImps, VIDEO_ENDPOINT_VERSION));
+      }
 
-    return reqs;
+      return reqs;
+    }));
   },
 
   /**
