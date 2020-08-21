@@ -19,5 +19,6 @@
   "sharethroughBidAdapter",
   "yieldmoBidAdapter",
   "aolBidAdapter",
-  "oneVideoBidAdapter"
+  "oneVideoBidAdapter",
+  "33acrossBidAdapter"
 ]
