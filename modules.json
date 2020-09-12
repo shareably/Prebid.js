@@ -19,5 +19,7 @@
   "yieldmoBidAdapter",
   "aolBidAdapter",
   "oneVideoBidAdapter",
-  "33acrossBidAdapter"
+  "33acrossBidAdapter",
+  "underdogmediaBidAdapter",
+  "unrulyBidAdapter" 
 ]
