@@ -21,5 +21,6 @@
   "oneVideoBidAdapter",
   "33acrossBidAdapter",
   "underdogmediaBidAdapter",
-  "unrulyBidAdapter" 
+  "unrulyBidAdapter",
+  "pubmaticBidAdapter"
 ]
