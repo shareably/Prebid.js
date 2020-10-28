@@ -20,5 +20,6 @@
   "oneVideoBidAdapter",
   "33acrossBidAdapter",
   "unrulyBidAdapter",
-  "pubmaticBidAdapter"
+  "pubmaticBidAdapter",
+  "onetagBidAdapter"
 ]
