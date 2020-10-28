@@ -9,7 +9,6 @@
   "ixBidAdapter",
   "sortableBidAdapter",
   "teadsBidAdapter",
-  "undertoneBidAdapter",
   "districtmDMXBidAdapter",
   "beachfrontBidAdapter",
   "spotxBidAdapter",
@@ -20,7 +19,6 @@
   "aolBidAdapter",
   "oneVideoBidAdapter",
   "33acrossBidAdapter",
-  "underdogmediaBidAdapter",
   "unrulyBidAdapter",
   "pubmaticBidAdapter"
 ]
