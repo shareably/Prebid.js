@@ -453,10 +453,7 @@ export function newTargeting(auctionManager) {
       .filter(bid => bid.adUnitCode === adUnitCode ? bid : null)
       .reduce(getHighestCpm));
 
-    console.time('getWinningBids')
     const withSharingWinningBids = getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bidsReceived);
-    console.timeEnd('getWinningBids')
-
     return withSharingWinningBids;
   };
 
