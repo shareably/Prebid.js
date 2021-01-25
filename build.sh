@@ -3,4 +3,5 @@
 # Build Script
 #
 
+npm install
 gulp build --modules=modules.json
