@@ -14,10 +14,10 @@ import { ADPOD } from '../mediaTypes.js';
 import { getHook, hook } from '../hook.js';
 import { getCoreStorageManager } from '../storageManager.js';
 
-export const storage = getCoreStorageManager('bidderFactory');
-
 import { sblyLog } from '../sbly/sblyUtils.js';
 import { useFakeGeneratedBids, fakeBidResponsesForBidRequest } from '../sbly/sblyModifications.js';
+
+export const storage = getCoreStorageManager('bidderFactory');
 
 /**
  * This file aims to support Adapters during the Prebid 0.x -> 1.x transition.
@@ -210,6 +210,21 @@ export function newBidder(spec) {
         return;
       }
       const bidRequestMap = {};
+
+      function addBidUsingRequestMap(bid) {
+        const bidRequest = bidRequestMap[bid.requestId];
+        if (bidRequest) {
+          // creating a copy of original values as cpm and currency are modified later
+          bid.originalCpm = bid.cpm;
+          bid.originalCurrency = bid.currency;
+          bid.meta = bid.meta || Object.assign({}, bid[bidRequest.bidder]);
+          const prebidBid = Object.assign(createBid(CONSTANTS.STATUS.GOOD, bidRequest), bid);
+          addBidWithCode(bidRequest.adUnitCode, prebidBid);
+        } else {
+          logWarn(`Bidder ${spec.code} made bid for unknown request ID: ${bid.requestId}. Ignoring.`);
+        }
+      }
+
       validBidRequests.forEach(bid => {
         bidRequestMap[bid.bidId] = bid;
         // Delete this once we are 1.0
@@ -320,20 +335,6 @@ export function newBidder(spec) {
             }
           }
           onResponse(bids);
-
-          function addBidUsingRequestMap(bid) {
-            const bidRequest = bidRequestMap[bid.requestId];
-            if (bidRequest) {
-              // creating a copy of original values as cpm and currency are modified later
-              bid.originalCpm = bid.cpm;
-              bid.originalCurrency = bid.currency;
-              bid.meta = bid.meta || Object.assign({}, bid[bidRequest.bidder]);
-              const prebidBid = Object.assign(createBid(CONSTANTS.STATUS.GOOD, bidRequest), bid);
-              addBidWithCode(bidRequest.adUnitCode, prebidBid);
-            } else {
-              logWarn(`Bidder ${spec.code} made bid for unknown request ID: ${bid.requestId}. Ignoring.`);
-            }
-          }
 
           function headerParser(xmlHttpResponse) {
             return {

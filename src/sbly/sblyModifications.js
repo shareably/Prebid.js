@@ -1,7 +1,7 @@
-import { getWinningBidsWithSharing as defaultGetWinningBidsWithSharing }  from './features/shareBids.js';
-export { useFakeGeneratedBids, fakeBidResponsesForBidRequest } from './features/generateFakeBids.js';
+import { getWinningBidsWithSharing as defaultGetWinningBidsWithSharing } from './features/shareBids.js';
 
-import { overrideGetWinningBidsWithSharing } from './sblyOverrides';
+import { overrideGetWinningBidsWithSharing } from './sblyOverrides.js';
+export { useFakeGeneratedBids, fakeBidResponsesForBidRequest } from './features/generateFakeBids.js';
 
 const CUSTOM_BID_USE_FUNCTION = 'canUseBidForAdUnitCode'
 const SORTED_AD_UNIT_CODES_BY_PRIORITY_FUNCTION = 'getAdUnitCodesBasedOnPriority'

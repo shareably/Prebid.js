@@ -1,7 +1,7 @@
 import { lap } from './vendor/lap.js';
 import { sblyLog } from '../sblyUtils.js';
 
-const EMPTY_ASSIGNMENT = "EMPTY";
+const EMPTY_ASSIGNMENT = 'EMPTY';
 const MILLE = 1000000;
 const LARGE = 1000000000;
 
@@ -82,7 +82,7 @@ function minimizeMatrix(constraintMatrix) {
       if (value === EMPTY_ASSIGNMENT) {
         minRow.push(0);
       } else {
-        minRow.push(maxValue - value);        
+        minRow.push(maxValue - value);
       }
     })
     minimizedConstraintMatrix.push(minRow);
@@ -319,12 +319,12 @@ export function getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bids
   sblyLog('All codes', adUnitCodes, 'All Bids', bidsReceived);
 
   const cpmOptimizedBidAssignments = getWinningBidAssignmentWithGeneralizedSharing(adUnitCodes, bidsReceived, customBidUseFunction);
-  
+
   var depthOptimizedAssignments;
   if (typeof sortAdUnitCodesByPriority !== 'function') {
     depthOptimizedAssignments = switchAssignmentsBackToOriginal(adUnitCodes, originalBidAssignments, cpmOptimizedBidAssignments);
   } else {
-    depthOptimizedAssignments = getDepthOptimizedAssignment(adUnitCodes, cpmOptimizedBidAssignments, adUnitCodesForBidAdId, sortAdUnitCodesByPriority);    
+    depthOptimizedAssignments = getDepthOptimizedAssignment(adUnitCodes, cpmOptimizedBidAssignments, adUnitCodesForBidAdId, sortAdUnitCodesByPriority);
   }
 
   const changeSummaries = determineChangeSummaries(adUnitCodes, depthOptimizedAssignments, originalBidAssignments)

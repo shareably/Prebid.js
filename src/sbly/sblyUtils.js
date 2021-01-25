@@ -37,6 +37,7 @@ export function uniqueBy(array, func) {
 
 export function sblyLog() {
   if ((window && window.location && window.location.href && window.location.href.includes(SBLY_DEBUG))) {
+    // eslint-disable-next-line no-console
     console.log.apply(console, decorateLog(arguments, 'SBLY:'));
   }
 }
@@ -55,30 +56,34 @@ export function sendPrebidEventOnce(eventName, attributes = {}) {
   }
 }
 
+// eslint-disable-next-line no-extend-native
 String.prototype.hashCode = function() {
+  // eslint-disable-next-line one-var
   var hash = 0, i, chr;
   if (this.length === 0) return hash;
   for (i = 0; i < this.length; i++) {
-    chr   = this.charCodeAt(i);
-    hash  = ((hash << 5) - hash) + chr;
+    chr = this.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
     hash |= 0; // Convert to 32bit integer
   }
   return hash;
 };
 
 if (!String.prototype.includes) {
+  // eslint-disable-next-line no-extend-native
   String.prototype.includes = function(search, start) {
     'use strict';
 
     if (search instanceof RegExp) {
       throw TypeError('first argument must not be a RegExp');
-    } 
+    }
     if (start === undefined) { start = 0; }
     return this.indexOf(search, start) !== -1;
   };
 }
 
 if (!Array.prototype.includes) {
+  // eslint-disable-next-line no-extend-native
   Object.defineProperty(Array.prototype, 'includes', {
     value: function(searchElement, fromIndex) {
       if (this == null) {
