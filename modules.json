@@ -22,5 +22,7 @@
   "33acrossBidAdapter",
   "unrulyBidAdapter",
   "pubmaticBidAdapter",
-  "onetagBidAdapter"
+  "onetagBidAdapter",
+  "userId",
+  "fabrickIdSystem"
 ]
