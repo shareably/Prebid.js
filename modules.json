@@ -24,5 +24,6 @@
   "pubmaticBidAdapter",
   "onetagBidAdapter",
   "userId",
-  "fabrickIdSystem"
+  "fabrickIdSystem",
+  "priceFloors"
 ]
