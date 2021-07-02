@@ -27,5 +27,6 @@
   "fabrickIdSystem",
   "priceFloors",
   "pulsepointBidAdapter",
+  "brightcomBidAdapter",
   "kargoBidAdapter"
 ]
