@@ -20,12 +20,11 @@
   "aolBidAdapter",
   "oneVideoBidAdapter",
   "33acrossBidAdapter",
-  "unrulyBidAdapter",
   "pubmaticBidAdapter",
   "onetagBidAdapter",
   "userId",
   "fabrickIdSystem",
-  "priceFloors",
   "pulsepointBidAdapter",
-  "kargoBidAdapter"
+  "kargoBidAdapter",
+  "justpremiumBidAdapter"
 ]
