@@ -254,47 +254,6 @@ function hashCodeForBidRequests(adUnitCodes, bidsReceived) {
   return (sortedAdUnitCodes.join(',') + sortedBidsReceivedAdIds.join(',')).hashCode()
 }
 
-function switchAssignmentsBackToOriginal(adUnitCodes, originalBidAssignments, cpmOptimizedBidAssignments) {
-  const reassignedBids = {};
-
-  const originalAdUnitCodes = Object.keys(originalBidAssignments);
-  const allOptimizedBids = Object.values(cpmOptimizedBidAssignments);
-  const usedBids = [];
-
-  originalAdUnitCodes.forEach(adUnitCode => {
-    const bidInOptimized = allOptimizedBids.filter(bid => bid.adUnitCode === adUnitCode)[0];
-    if (bidInOptimized) {
-      reassignedBids[adUnitCode] = bidInOptimized;
-      usedBids.push(bidInOptimized)
-    }
-  })
-
-  const usedBidAdIds = usedBids.map(bid => bid.adId);
-  const unassignedBids = allOptimizedBids.filter(bid => !usedBidAdIds.includes(bid.adId));
-  var availableAdUnitCodes = originalAdUnitCodes.filter(adUnitCode => !reassignedBids[adUnitCode]);
-
-  sblyLog('Intermediate re-assign', JSON.parse(JSON.stringify(reassignedBids)), 'unassignedBids', unassignedBids, 'availableAdUnitCodes', availableAdUnitCodes);
-
-  unassignedBids.forEach(bid => {
-    if (availableAdUnitCodes.includes(bid.adUnitCode)) {
-      reassignedBids[bid.adUnitCode] = bid;
-      availableAdUnitCodes = availableAdUnitCodes.filter(adUnitCode => adUnitCode !== bid.adUnitCode);
-    } else {
-      const firstAvailable = availableAdUnitCodes.shift();
-      if (firstAvailable) {
-        reassignedBids[firstAvailable] = bid;
-      } else {
-        const nextAvailable = adUnitCodes.filter(adUnitCode => !reassignedBids[adUnitCode])[0];
-        reassignedBids[nextAvailable] = bid;
-      }
-    }
-  })
-
-  sblyLog('Final re-assign', reassignedBids);
-
-  return reassignedBids;
-}
-
 export function getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bidsReceived, customBidUseFunction, sortAdUnitCodesByPriority) {
   if (typeof customBidUseFunction !== 'function') {
     return originalWinningBids;
@@ -312,24 +271,24 @@ export function getWinningBidsWithSharing(originalWinningBids, adUnitCodes, bids
   }, {})
 
   const { bidsForAdCode, adUnitCodesForBidAdId } = createMappingOfBidsAndAdUnitCodes(adUnitCodes, bidsReceived, customBidUseFunction);
+  const cpmOptimizedBidAssignments = getWinningBidAssignmentWithGeneralizedSharing(adUnitCodes, bidsReceived, customBidUseFunction);
 
-  sblyLog('Default Winning Assigments', originalBidAssignments);
+  sblyLog('Default Winning Assigments', originalBidAssignments, 'CPM Optimized Assignments', cpmOptimizedBidAssignments);
   sblyLog('Mapping of available bids for each ad unit code:', bidsForAdCode);
   sblyLog('Mapping of ad unit codes for each bid adId', adUnitCodesForBidAdId);
   sblyLog('All codes', adUnitCodes, 'All Bids', bidsReceived);
 
-  const cpmOptimizedBidAssignments = getWinningBidAssignmentWithGeneralizedSharing(adUnitCodes, bidsReceived, customBidUseFunction);
-
   var depthOptimizedAssignments;
-  if (typeof sortAdUnitCodesByPriority !== 'function') {
-    depthOptimizedAssignments = switchAssignmentsBackToOriginal(adUnitCodes, originalBidAssignments, cpmOptimizedBidAssignments);
+  const hasNoDepthOptimization = typeof sortAdUnitCodesByPriority !== 'function';
+  if (hasNoDepthOptimization) {
+    depthOptimizedAssignments = cpmOptimizedBidAssignments;
   } else {
     depthOptimizedAssignments = getDepthOptimizedAssignment(adUnitCodes, cpmOptimizedBidAssignments, adUnitCodesForBidAdId, sortAdUnitCodesByPriority);
   }
 
   const changeSummaries = determineChangeSummaries(adUnitCodes, depthOptimizedAssignments, originalBidAssignments)
   const assignmentDifference = calculateDifferenceInAssignments(depthOptimizedAssignments, originalBidAssignments);
-  const hasEnoughGain = assignmentDifference.gainAmount >= 0;
+  const hasEnoughGain = hasNoDepthOptimization ? assignmentDifference.gainAmount > 0.05 : assignmentDifference.gainAmount >= 0;
 
   sblyLog('[Matrix Optimized vs. Original] Assignment Difference', assignmentDifference, 'hasEnoughGain', hasEnoughGain);
   sblyLog('Change Summary vs Orig', changeSummaries, 'Orig', originalBidAssignments, 'Final Assignments', depthOptimizedAssignments);

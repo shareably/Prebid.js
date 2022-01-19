@@ -1017,7 +1017,7 @@ $$PREBID_GLOBAL$$.getAllBidResponses = function () {
 
 function getAllBidResponses(type) {
   const responses = auctionManager[type]()
-    .filter(utils.bind.call(adUnitsFilter, this, auctionManager.getAdUnitCodes()));
+    .filter(bind.call(adUnitsFilter, this, auctionManager.getAdUnitCodes()));
 
   return JSON.parse(JSON.stringify(responses
     .map(bid => bid.adUnitCode)
