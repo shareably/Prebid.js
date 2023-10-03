@@ -27,7 +27,7 @@
   "adkernelBidAdapter",
   "medianetBidAdapter",
   "vidazooBidAdapter",
-
+  "kueezRtbBidAdapter",
   "nativoBidAdapter",
   "riseBidAdapter"
 ]
