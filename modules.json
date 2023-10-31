@@ -7,6 +7,9 @@
   "userId",
   "fabrickIdSystem",
   "33acrossIdSystem",
+  "pubProvidedIdSystem",
+  "unifiedIdSystem",
+  "uid2IdSystem",
 
   "appnexusBidAdapter",
   "sovrnBidAdapter",
