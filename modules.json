@@ -2,15 +2,24 @@
   "currency",
   "consentManagement",
   "consentManagementUsp",
-  "priceFloors",
 
   "userId",
   "fabrickIdSystem",
   "33acrossIdSystem",
   "pubProvidedIdSystem",
   "unifiedIdSystem",
+  "hadronIdSystem",
   "uid2IdSystem",
 
+  "rtdModule",
+  "hadronRtdProvider",
+
+  "hadronAnalyticsAdapter",
+
+  "prebidServerBidAdapter",
+  "s2sTesting",
+
+  "criteoBidAdapter",
   "appnexusBidAdapter",
   "sovrnBidAdapter",
   "openxBidAdapter",
