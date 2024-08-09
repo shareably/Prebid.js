@@ -1,7 +1,12 @@
 [
   "currency",
-  "consentManagement",
-  "consentManagementUsp",
+  "consentManagementGpp",
+  "consentManagementTcf",
+  "tcfControl",
+  "gppControl_usnat",
+  "gppControl_usstates",
+
+  "gptPreAuction",
 
   "userId",
   "fabrickIdSystem",
