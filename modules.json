@@ -25,6 +25,7 @@
   "s2sTesting",
 
   "criteoBidAdapter",
+  "adagioBidAdapter",
   "appnexusBidAdapter",
   "sovrnBidAdapter",
   "openxBidAdapter",
