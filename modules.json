@@ -29,6 +29,10 @@
   "onetagBidAdapter",
   "smilewantedBidAdapter",
   "richaudienceBidAdapter",
+  "pgamsspBidAdapter",
+  "seedtagBidAdapter",
+  "smaatoBidAdapter",
+  "adyoulikeBidAdapter",
 
   "criteoBidAdapter",
   "appnexusBidAdapter",
