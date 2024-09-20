@@ -33,6 +33,7 @@
   "seedtagBidAdapter",
   "smaatoBidAdapter",
   "adyoulikeBidAdapter",
+  "datablocksBidAdapter",
 
   "criteoBidAdapter",
   "appnexusBidAdapter",
@@ -40,17 +41,11 @@
   "openxBidAdapter",
   "rubiconBidAdapter",
   "tripleliftBidAdapter",
-  "ixBidAdapter",
-  "sharethroughBidAdapter",
-  "33acrossBidAdapter",
   "pubmaticBidAdapter",
   "sonobiBidAdapter",
-  "gridBidAdapter",
   "minutemediaBidAdapter",
-  "adkernelBidAdapter",
   "medianetBidAdapter",
   "vidazooBidAdapter",
   "kueezRtbBidAdapter",
-  "nativoBidAdapter",
   "riseBidAdapter"
 ]
