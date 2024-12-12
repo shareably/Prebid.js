@@ -6,6 +6,8 @@
   "gppControl_usnat",
   "gppControl_usstates",
 
+  "priceFloors",
+
   "gptPreAuction",
 
   "userId",
